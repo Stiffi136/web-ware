@@ -6,6 +6,7 @@ import { DataFormStage } from "./DataFormStage.tsx";
 import { DownloadButtonStage } from "./DownloadButtonStage.tsx";
 import { OnlineShopStage } from "./OnlineShopStage.tsx";
 import { InstallerStage } from "./InstallerStage.tsx";
+import { CookieBannerStage } from "./CookieBannerStage.tsx";
 
 export const stageRegistry: Record<string, FC<StageProps>> = {
   captcha: CaptchaStage,
@@ -14,6 +15,7 @@ export const stageRegistry: Record<string, FC<StageProps>> = {
   "download-button": DownloadButtonStage,
   "online-shop": OnlineShopStage,
   installer: InstallerStage,
+  "cookie-banner": CookieBannerStage,
 };
 
 export const stageNames: Record<string, string> = {
@@ -23,4 +25,5 @@ export const stageNames: Record<string, string> = {
   "download-button": "Download Button",
   "online-shop": "Online Shop",
   installer: "Installer",
+  "cookie-banner": "Cookie Banner",
 };
