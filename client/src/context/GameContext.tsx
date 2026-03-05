@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, type ReactNode } from "react";
-import type { Player, Room, StageConfig, StageResult } from "../types/game.ts";
+import type { Player, Room, GameConfig, StageConfig, StageResult } from "../types/game.ts";
 
 type GameState = {
   playerId: string;
@@ -21,6 +21,7 @@ type GameAction =
   | { type: "player-progress"; playerId: string; stageIndex: number }
   | { type: "stage-result"; stageIndex: number; results: StageResult[] }
   | { type: "game-end"; rankings: Player[] }
+  | { type: "config-changed"; config: GameConfig }
   | { type: "reset-stage-timer" }
   | { type: "reset" };
 
@@ -80,6 +81,18 @@ function reducer(state: GameState, action: GameAction): GameState {
           players: state.room.players.map((p) =>
             p.id === action.playerId ? { ...p, ready: action.ready } : p,
           ),
+        },
+      };
+    }
+
+    case "config-changed": {
+      if (!state.room) return state;
+      return {
+        ...state,
+        room: {
+          ...state.room,
+          config: action.config,
+          players: state.room.players.map((p) => ({ ...p, ready: false })),
         },
       };
     }

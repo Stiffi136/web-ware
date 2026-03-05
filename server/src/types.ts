@@ -2,6 +2,16 @@ import type { ServerWebSocket } from "bun";
 
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
 
+export type GameConfig = {
+  stagesPerDifficulty: number; // 2–10
+  maxDifficulty: Difficulty; // 1–5
+};
+
+export const DEFAULT_CONFIG: GameConfig = {
+  stagesPerDifficulty: 2,
+  maxDifficulty: 5,
+};
+
 export type Player = {
   id: string;
   name: string;
@@ -36,6 +46,7 @@ export type Room = {
   stageResults: Map<number, StageResult[]>;
   stageStartTimes: Map<string, number>; // playerId -> timestamp when current stage started
   countdownTimer: ReturnType<typeof setTimeout> | null;
+  config: GameConfig;
 };
 
 export type WSData = {
@@ -49,5 +60,6 @@ export type GameSocket = ServerWebSocket<WSData>;
 export type ClientMessage =
   | { event: "join"; roomId: string; playerName: string }
   | { event: "ready"; ready: boolean }
+  | { event: "config-change"; config: GameConfig }
   | { event: "stage-complete"; stageIndex: number; timeMs: number; success: boolean }
   | { event: "rematch" };

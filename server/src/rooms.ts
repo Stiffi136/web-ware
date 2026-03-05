@@ -1,11 +1,10 @@
-import type { Room, Player, GameSocket, StageConfig, Difficulty } from "./types.ts";
+import type { Room, Player, GameSocket, GameConfig, StageConfig, Difficulty } from "./types.ts";
+import { DEFAULT_CONFIG } from "./types.ts";
 
 const rooms = new Map<string, Room>();
 const socketToRoom = new Map<GameSocket, string>();
 
 const STAGE_TYPES = ["captcha", "password", "data-form", "download-button", "online-shop", "installer", "cookie-banner", "age-verification"];
-const STAGES_PER_ROUND = 2;
-const TOTAL_ROUNDS = 5;
 
 function generateRoomId(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -23,7 +22,7 @@ function deriveStageSeed(roomSeed: number, stageIndex: number): number {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
-function generateStages(seed: number): StageConfig[] {
+function generateStages(seed: number, config: GameConfig): StageConfig[] {
   const stages: StageConfig[] = [];
   let rand = seed;
   const nextRand = () => {
@@ -33,10 +32,10 @@ function generateStages(seed: number): StageConfig[] {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 
-  for (let round = 0; round < TOTAL_ROUNDS; round++) {
+  for (let round = 0; round < config.maxDifficulty; round++) {
     const difficulty = (round + 1) as Difficulty;
     const available = [...STAGE_TYPES];
-    for (let s = 0; s < STAGES_PER_ROUND; s++) {
+    for (let s = 0; s < config.stagesPerDifficulty; s++) {
       const idx = Math.floor(nextRand() * available.length);
       const type = available.splice(idx, 1)[0]!;
       const stageIndex = stages.length;
@@ -70,6 +69,7 @@ export function createRoom(): Room {
     stageResults: new Map(),
     stageStartTimes: new Map(),
     countdownTimer: null,
+    config: { ...DEFAULT_CONFIG },
   };
   rooms.set(room.id, room);
   return room;
@@ -121,7 +121,7 @@ export function removePlayer(ws: GameSocket): { room: Room; player: Player } | n
 
 export function startGame(room: Room): void {
   room.seed = Date.now();
-  room.stages = generateStages(room.seed);
+  room.stages = generateStages(room.seed, room.config);
   room.state = "playing";
   room.stageResults.clear();
   room.stageStartTimes.clear();
@@ -148,6 +148,16 @@ export function resetForRematch(room: Room): void {
   }
 }
 
+export function updateConfig(room: Room, config: GameConfig): void {
+  room.config = {
+    stagesPerDifficulty: Math.max(2, Math.min(10, config.stagesPerDifficulty)),
+    maxDifficulty: Math.max(1, Math.min(5, config.maxDifficulty)) as Difficulty,
+  };
+  for (const player of room.players) {
+    player.ready = false;
+  }
+}
+
 export function roomToJSON(room: Room) {
   return {
     id: room.id,
@@ -156,5 +166,6 @@ export function roomToJSON(room: Room) {
     stages: room.stages,
     seed: room.seed,
     createdAt: room.createdAt,
+    config: room.config,
   };
 }

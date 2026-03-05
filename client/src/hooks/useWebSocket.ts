@@ -42,6 +42,9 @@ export function useWebSocket() {
         case "player-ready":
           dispatch({ type: "player-ready", playerId: msg.playerId, ready: msg.ready });
           break;
+        case "config-changed":
+          dispatch({ type: "config-changed", config: msg.config });
+          break;
         case "countdown":
           dispatch({ type: "countdown", seconds: msg.seconds });
           break;

@@ -1,9 +1,10 @@
-import type { Player, Room, StageConfig, StageResult } from "./game.ts";
+import type { Player, Room, GameConfig, StageConfig, StageResult } from "./game.ts";
 
 // Client -> Server
 export type ClientMessage =
   | { event: "join"; roomId: string; playerName: string }
   | { event: "ready"; ready: boolean }
+  | { event: "config-change"; config: GameConfig }
   | { event: "stage-complete"; stageIndex: number; timeMs: number; success: boolean }
   | { event: "rematch" };
 
@@ -13,6 +14,7 @@ export type ServerMessage =
   | { event: "player-joined"; player: Player }
   | { event: "player-left"; playerId: string }
   | { event: "player-ready"; playerId: string; ready: boolean }
+  | { event: "config-changed"; config: GameConfig }
   | { event: "countdown"; seconds: number }
   | { event: "game-start"; stages: StageConfig[]; seed: number }
   | { event: "player-progress"; playerId: string; stageIndex: number }

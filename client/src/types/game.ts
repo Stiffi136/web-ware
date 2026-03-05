@@ -1,5 +1,10 @@
 export type Difficulty = 1 | 2 | 3 | 4 | 5;
 
+export type GameConfig = {
+  stagesPerDifficulty: number;
+  maxDifficulty: Difficulty;
+};
+
 export type Player = {
   id: string;
   name: string;
@@ -18,6 +23,7 @@ export type Room = {
   stages: StageConfig[];
   seed: number;
   createdAt: number;
+  config: GameConfig;
 };
 
 export type StageConfig = {

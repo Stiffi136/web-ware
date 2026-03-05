@@ -1,4 +1,4 @@
-import type { Room, GameSocket, ClientMessage, StageResult } from "./types.ts";
+import type { Room, GameSocket, GameConfig, ClientMessage, StageResult } from "./types.ts";
 import {
   getRoom,
   getRoomForSocket,
@@ -7,6 +7,7 @@ import {
   removePlayer,
   startGame,
   resetForRematch,
+  updateConfig,
   roomToJSON,
 } from "./rooms.ts";
 
@@ -187,6 +188,20 @@ function handleStageComplete(
   }
 }
 
+function handleConfigChange(ws: GameSocket, msg: { config: GameConfig }): void {
+  const room = getRoomForSocket(ws);
+  if (!room || room.state !== "lobby") {
+    return;
+  }
+
+  updateConfig(room, msg.config);
+  broadcast(room, { event: "config-changed", config: room.config });
+  // Broadcast unready state for all players
+  for (const player of room.players) {
+    broadcast(room, { event: "player-ready", playerId: player.id, ready: false });
+  }
+}
+
 function handleRematch(ws: GameSocket): void {
   const room = getRoomForSocket(ws);
   if (!room || room.state !== "results") {
@@ -211,6 +226,9 @@ export function handleMessage(ws: GameSocket, raw: string): void {
       break;
     case "ready":
       handleReady(ws, msg);
+      break;
+    case "config-change":
+      handleConfigChange(ws, msg);
       break;
     case "stage-complete":
       handleStageComplete(ws, msg);
