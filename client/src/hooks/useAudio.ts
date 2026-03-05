@@ -69,5 +69,14 @@ export function useAudio() {
     [volume],
   );
 
-  return { volume, setVolume, playMusic, stopMusic, setPlaybackRate, playSfx };
+  const duckMusic = useCallback(
+    (factor: number) => {
+      if (musicRef.current) {
+        musicRef.current.volume = volume * factor;
+      }
+    },
+    [volume],
+  );
+
+  return { volume, setVolume, playMusic, stopMusic, setPlaybackRate, playSfx, duckMusic };
 }

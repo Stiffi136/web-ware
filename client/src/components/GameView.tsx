@@ -1,23 +1,37 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useGame } from "../context/GameContext.tsx";
 import { stageRegistry, stageNames } from "../stages/registry.ts";
 import { ProgressBar } from "./ProgressBar.tsx";
 import { Scoreboard } from "./Scoreboard.tsx";
 import { FeedbackOverlay } from "./FeedbackOverlay.tsx";
+import { DifficultyOverlay } from "./DifficultyOverlay.tsx";
 import type { ClientMessage } from "../types/protocol.ts";
 
 type Props = {
   send: (msg: ClientMessage) => void;
   playSfx: (src: string) => void;
+  duckMusic: (factor: number) => void;
+  volume: number;
 };
 
-export function GameView({ send, playSfx }: Props) {
+export function GameView({ send, playSfx, duckMusic, volume }: Props) {
   const { state, dispatch } = useGame();
   const room = state.room!;
   const me = room.players.find((p) => p.id === state.playerId);
   const stageIndex = me?.currentStage ?? 0;
   const stageConfig = room.stages[stageIndex];
   const [feedback, setFeedback] = useState<{ result: "correct" | "incorrect"; timeMs: number } | null>(null);
+  const [difficultyUp, setDifficultyUp] = useState<number | null>(null);
+  const prevDifficultyRef = useRef(stageConfig?.difficulty ?? 1);
+
+  useEffect(() => {
+    if (!stageConfig) return;
+    const prev = prevDifficultyRef.current;
+    if (stageConfig.difficulty > prev) {
+      setDifficultyUp(stageConfig.difficulty);
+    }
+    prevDifficultyRef.current = stageConfig.difficulty;
+  }, [stageConfig]);
 
   const handleSubmit = useCallback(
     (success: boolean) => {
@@ -50,6 +64,21 @@ export function GameView({ send, playSfx }: Props) {
   const StageComponent = stageRegistry[stageConfig.type];
   if (!StageComponent) {
     return <div>Unknown stage: {stageConfig.type}</div>;
+  }
+
+  if (difficultyUp) {
+    return (
+      <DifficultyOverlay
+        difficulty={difficultyUp}
+        onDone={() => {
+          setFeedback(null);
+          setDifficultyUp(null);
+          dispatch({ type: "reset-stage-timer" });
+        }}
+        volume={volume}
+        duckMusic={duckMusic}
+      />
+    );
   }
 
   return (
