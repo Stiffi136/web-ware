@@ -5,8 +5,6 @@ import { seededRandom, shuffleArray, pickRandom } from "../utils/random.ts";
 type Field = {
   id: string;
   label: string;
-  type: "text" | "email" | "tel" | "date" | "select";
-  options?: string[];
   expected: string;
 };
 
@@ -19,15 +17,15 @@ function makeFields(difficulty: number, rand: () => number): Field[] {
   const lastName = pickRandom(LAST_NAMES, rand);
   const city = pickRandom(CITIES, rand);
   const base: Field[] = [
-    { id: "first", label: "First Name", type: "text", expected: firstName },
-    { id: "last", label: "Last Name", type: "text", expected: lastName },
+    { id: "first", label: "First Name", expected: firstName },
+    { id: "last", label: "Last Name", expected: lastName },
   ];
 
   const extra: Field[] = [
-    { id: "email", label: "Email", type: "email", expected: `${firstName.toLowerCase()}@mail.com` },
-    { id: "city", label: "City", type: "text", expected: city },
-    { id: "phone", label: "Phone", type: "tel", expected: `+${String(Math.floor(rand() * 90) + 10)} ${String(Math.floor(rand() * 9000000) + 1000000)}` },
-    { id: "zip", label: "ZIP Code", type: "text", expected: String(Math.floor(rand() * 90000) + 10000) },
+    { id: "email", label: "Email", expected: `${firstName.toLowerCase()}@mail.com` },
+    { id: "city", label: "City", expected: city },
+    { id: "phone", label: "Phone", expected: `+${String(Math.floor(rand() * 90) + 10)} ${String(Math.floor(rand() * 9000000) + 1000000)}` },
+    { id: "zip", label: "ZIP Code", expected: String(Math.floor(rand() * 90000) + 10000) },
   ];
 
   const shuffled = shuffleArray(extra, rand);
@@ -50,7 +48,7 @@ export function DataFormStage({ difficulty, seed, onSubmit }: StageProps) {
 
   return (
     <div className="flex-col gap-md" style={{ alignItems: "center" }}>
-      <p className="stage-prompt">Fill in the form (or Drag & Drop)</p>
+      <p className="stage-prompt">Fill in the form via Drag & Drop</p>
       <div
         className="crayon-card"
         style={{ background: "var(--green)", width: "min(460px, 100%)" }}
@@ -115,31 +113,19 @@ export function DataFormStage({ difficulty, seed, onSubmit }: StageProps) {
               }}
             >
               <label style={{ fontWeight: 700, fontSize: "0.9rem" }}>{f.label}</label>
-              {f.type === "select" ? (
-                <select
-                  className="crayon-input"
-                  value={values[f.id] ?? ""}
-                  onChange={(e) => update(f.id, e.target.value)}
-                >
-                  <option value="">-- select --</option>
-                  {f.options?.map((o) => (
-                    <option key={o} value={o}>
-                      {o}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  className="crayon-input"
-                  type={f.type}
-                  value={values[f.id] ?? ""}
-                  onChange={(e) => update(f.id, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSubmit();
-                  }}
-                  autoComplete="off"
-                />
-              )}
+              <div
+                className="crayon-input"
+                style={{
+                  minHeight: 38,
+                  display: "flex",
+                  alignItems: "center",
+                  cursor: "default",
+                  opacity: values[f.id] ? 1 : 0.4,
+                  fontStyle: values[f.id] ? "normal" : "italic",
+                }}
+              >
+                {values[f.id] || "Drop here…"}
+              </div>
             </div>
           ))}
         </div>
