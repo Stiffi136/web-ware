@@ -1,1 +1,2 @@
 {"id":"web-ware-1476","title":"Fix Dockerfile server paths and port 3001","status":"closed","type":"task","priority":2,"createdAt":"2026-03-05T07:49:23.774Z","updatedAt":"2026-03-05T07:49:51.173Z","closedAt":"2026-03-05T07:49:51.173Z"}
+{"id":"web-ware-278b","title":"Add GitHub Pages release workflow for client with WS env","status":"closed","type":"task","priority":2,"createdAt":"2026-03-05T07:52:15.628Z","updatedAt":"2026-03-05T07:53:14.425Z","closedAt":"2026-03-05T07:53:14.425Z"}
