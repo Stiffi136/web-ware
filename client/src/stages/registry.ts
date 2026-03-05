@@ -5,6 +5,7 @@ import { PasswordStage } from "./PasswordStage.tsx";
 import { DataFormStage } from "./DataFormStage.tsx";
 import { DownloadButtonStage } from "./DownloadButtonStage.tsx";
 import { OnlineShopStage } from "./OnlineShopStage.tsx";
+import { InstallerStage } from "./InstallerStage.tsx";
 
 export const stageRegistry: Record<string, FC<StageProps>> = {
   captcha: CaptchaStage,
@@ -12,6 +13,7 @@ export const stageRegistry: Record<string, FC<StageProps>> = {
   "data-form": DataFormStage,
   "download-button": DownloadButtonStage,
   "online-shop": OnlineShopStage,
+  installer: InstallerStage,
 };
 
 export const stageNames: Record<string, string> = {
@@ -20,4 +22,5 @@ export const stageNames: Record<string, string> = {
   "data-form": "Data Form",
   "download-button": "Download Button",
   "online-shop": "Online Shop",
+  installer: "Installer",
 };

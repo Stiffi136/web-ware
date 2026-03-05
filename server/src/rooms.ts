@@ -3,7 +3,7 @@ import type { Room, Player, GameSocket, StageConfig, Difficulty } from "./types.
 const rooms = new Map<string, Room>();
 const socketToRoom = new Map<GameSocket, string>();
 
-const STAGE_TYPES = ["captcha", "password", "data-form", "download-button", "online-shop"];
+const STAGE_TYPES = ["captcha", "password", "data-form", "download-button", "online-shop", "installer"];
 const STAGES_PER_ROUND = 2;
 const TOTAL_ROUNDS = 5;
 
