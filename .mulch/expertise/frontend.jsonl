@@ -1,0 +1,1 @@
+{"type":"pattern","name":"crayon-testpage-setup","description":"For standalone crayon mockups, create a dedicated HTML test page that links crayon.css, overrides --paper/--noise to local ./img assets, and defines the SVG #crayon filter in the HTML.","classification":"tactical","recorded_at":"2026-03-05T06:01:33.507Z","id":"mx-9b49ae"}
