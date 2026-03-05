@@ -1,0 +1,84 @@
+name: Deploy Client To GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - "client/**"
+      - ".github/workflows/deploy-client-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VITE_WS_URL: ${{ vars.VITE_WS_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Validate WebSocket URL
+        run: |
+          if [ -z "${VITE_WS_URL}" ]; then
+            echo "Repository variable VITE_WS_URL is required for GitHub Pages builds."
+            exit 1
+          fi
+
+      - name: Compute Vite base path
+        id: base
+        shell: bash
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          OWNER_NAME="${GITHUB_REPOSITORY%/*}"
+
+          OWNER_LOWER="$(echo "${OWNER_NAME}" | tr '[:upper:]' '[:lower:]')"
+          REPO_LOWER="$(echo "${REPO_NAME}" | tr '[:upper:]' '[:lower:]')"
+
+          if [ "${REPO_LOWER}" = "${OWNER_LOWER}.github.io" ]; then
+            echo "base=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=/${REPO_NAME}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install client dependencies
+        working-directory: client
+        run: bun install --frozen-lockfile
+
+      - name: Build client
+        working-directory: client
+        run: bun run build -- --base "${{ steps.base.outputs.base }}"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: client/dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
