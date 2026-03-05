@@ -86,7 +86,27 @@ export function DownloadButtonStage({ difficulty, seed, onSubmit }: StageProps) 
 
   return (
     <div className="flex-col gap-md" style={{ alignItems: "center" }}>
-      <p className="stage-prompt">Find the real download button</p>
+      <p className="stage-prompt">
+        Find this button:{" "}
+        <span
+          style={{
+            display: "inline-block",
+            background: "#44aa44",
+            color: "#fff",
+            border: "2px solid #2a7d2a",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 900,
+            padding: "4px 16px",
+            fontFamily: "inherit",
+            textShadow: "1px 1px 0 rgba(0,0,0,0.3)",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+            verticalAlign: "middle",
+          }}
+        >
+          Download
+        </span>
+      </p>
       <div
         className="crayon-card"
         style={{
