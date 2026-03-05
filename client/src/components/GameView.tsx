@@ -66,12 +66,22 @@ export function GameView({ send, playSfx, duckMusic, volume }: Props) {
     return <div>Unknown stage: {stageConfig.type}</div>;
   }
 
+  if (feedback) {
+    return (
+      <FeedbackOverlay
+        result={feedback.result}
+        timeMs={feedback.timeMs}
+        onDone={() => setFeedback(null)}
+        playSfx={playSfx}
+      />
+    );
+  }
+
   if (difficultyUp) {
     return (
       <DifficultyOverlay
         difficulty={difficultyUp}
         onDone={() => {
-          setFeedback(null);
           setDifficultyUp(null);
           dispatch({ type: "reset-stage-timer" });
         }}
@@ -83,14 +93,6 @@ export function GameView({ send, playSfx, duckMusic, volume }: Props) {
 
   return (
     <div className="page">
-      {feedback && (
-        <FeedbackOverlay
-          result={feedback.result}
-          timeMs={feedback.timeMs}
-          onDone={() => setFeedback(null)}
-          playSfx={playSfx}
-        />
-      )}
       <ProgressBar />
       <div style={{ textAlign: "center", marginBottom: 4 }}>
         <span style={{ fontWeight: 700, opacity: 0.6, fontSize: "0.9rem" }}>
