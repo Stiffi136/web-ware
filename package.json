@@ -1,0 +1,9 @@
+{
+  "name": "web-ware",
+  "private": true,
+  "scripts": {
+    "dev": "bun run dev:server & bun run dev:client",
+    "dev:server": "cd server && bun run dev",
+    "dev:client": "cd client && bun run dev"
+  }
+}
