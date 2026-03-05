@@ -13,15 +13,11 @@ type Field = {
 const FIRST_NAMES = ["Alex", "Jordan", "Taylor", "Casey", "Morgan", "Riley", "Quinn", "Sage"];
 const LAST_NAMES = ["Smith", "Rivera", "Chen", "Kim", "Patel", "Garcia", "Novak", "Ali"];
 const CITIES = ["Berlin", "Tokyo", "Lagos", "Lima", "Oslo", "Cairo", "Seoul", "Rome"];
-const COUNTRIES = ["Germany", "Japan", "Nigeria", "Peru", "Norway", "Egypt", "South Korea", "Italy"];
-const COLORS = ["Red", "Blue", "Green", "Yellow", "Purple"];
 
 function makeFields(difficulty: number, rand: () => number): Field[] {
   const firstName = pickRandom(FIRST_NAMES, rand);
   const lastName = pickRandom(LAST_NAMES, rand);
   const city = pickRandom(CITIES, rand);
-  const country = pickRandom(COUNTRIES, rand);
-
   const base: Field[] = [
     { id: "first", label: "First Name", type: "text", expected: firstName },
     { id: "last", label: "Last Name", type: "text", expected: lastName },
@@ -30,20 +26,18 @@ function makeFields(difficulty: number, rand: () => number): Field[] {
   const extra: Field[] = [
     { id: "email", label: "Email", type: "email", expected: `${firstName.toLowerCase()}@mail.com` },
     { id: "city", label: "City", type: "text", expected: city },
-    { id: "country", label: "Country", type: "select", options: shuffleArray([...COUNTRIES], rand), expected: country },
     { id: "phone", label: "Phone", type: "tel", expected: `+${String(Math.floor(rand() * 90) + 10)} ${String(Math.floor(rand() * 9000000) + 1000000)}` },
     { id: "zip", label: "ZIP Code", type: "text", expected: String(Math.floor(rand() * 90000) + 10000) },
-    { id: "color", label: "Favorite Color", type: "select", options: COLORS, expected: pickRandom(COLORS, rand) },
-    { id: "dob", label: "Date of Birth", type: "date", expected: `${String(Math.floor(rand() * 30) + 1970)}-${String(Math.floor(rand() * 12) + 1).padStart(2, "0")}-${String(Math.floor(rand() * 28) + 1).padStart(2, "0")}` },
   ];
 
   const shuffled = shuffleArray(extra, rand);
-  return [...base, ...shuffled.slice(0, difficulty + 1)];
+  return [...base, ...shuffled.slice(0, difficulty)];
 }
 
 export function DataFormStage({ difficulty, seed, onSubmit }: StageProps) {
   const fields = useMemo(() => makeFields(difficulty, seededRandom(seed)), [difficulty, seed]);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
   const update = (id: string, val: string) => {
     setValues((prev) => ({ ...prev, [id]: val }));
@@ -56,7 +50,7 @@ export function DataFormStage({ difficulty, seed, onSubmit }: StageProps) {
 
   return (
     <div className="flex-col gap-md" style={{ alignItems: "center" }}>
-      <p className="stage-prompt">Fill in the form</p>
+      <p className="stage-prompt">Fill in the form (or Drag & Drop)</p>
       <div
         className="crayon-card"
         style={{ background: "var(--green)", width: "min(460px, 100%)" }}
@@ -68,20 +62,58 @@ export function DataFormStage({ difficulty, seed, onSubmit }: StageProps) {
             padding: "10px 14px",
             marginBottom: 12,
             fontWeight: 700,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 6,
           }}
         >
-          Enter the data for: <strong>{fields[0]?.expected} {fields[1]?.expected}</strong>
-          {fields.find((f) => f.id === "city") && <>, City: <strong>{fields.find((f) => f.id === "city")!.expected}</strong></>}
-          {fields.find((f) => f.id === "country") && <>, Country: <strong>{fields.find((f) => f.id === "country")!.expected}</strong></>}
-          {fields.find((f) => f.id === "email") && <>, Email: <strong>{fields.find((f) => f.id === "email")!.expected}</strong></>}
-          {fields.find((f) => f.id === "phone") && <>, Phone: <strong>{fields.find((f) => f.id === "phone")!.expected}</strong></>}
-          {fields.find((f) => f.id === "zip") && <>, ZIP: <strong>{fields.find((f) => f.id === "zip")!.expected}</strong></>}
-          {fields.find((f) => f.id === "color") && <>, Fav Color: <strong>{fields.find((f) => f.id === "color")!.expected}</strong></>}
-          {fields.find((f) => f.id === "dob") && <>, DOB: <strong>{fields.find((f) => f.id === "dob")!.expected}</strong></>}
+          {fields.map((f) => {
+            const filled = values[f.id] === f.expected;
+            return (
+              <span
+                key={f.id}
+                draggable={!filled}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData("text/plain", f.expected);
+                  e.dataTransfer.effectAllowed = "copy";
+                }}
+                style={{
+                  background: filled ? "rgba(0,0,0,0.12)" : "var(--white)",
+                  padding: "4px 10px",
+                  borderRadius: 8,
+                  cursor: filled ? "default" : "grab",
+                  opacity: filled ? 0.45 : 1,
+                  fontSize: "0.9rem",
+                  textDecoration: filled ? "line-through" : "none",
+                  transition: "opacity 0.15s, background 0.15s",
+                }}
+              >
+                {f.label}: {f.expected}
+              </span>
+            );
+          })}
         </div>
         <div className="flex-col" style={{ gap: 8 }}>
           {fields.map((f) => (
-            <div key={f.id}>
+            <div
+              key={f.id}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "copy";
+                setDropTargetId(f.id);
+              }}
+              onDragLeave={() => setDropTargetId(null)}
+              onDrop={(e) => {
+                e.preventDefault();
+                update(f.id, e.dataTransfer.getData("text/plain"));
+                setDropTargetId(null);
+              }}
+              style={{
+                outline: dropTargetId === f.id ? "2px solid var(--white)" : "none",
+                borderRadius: 8,
+                transition: "outline 0.1s",
+              }}
+            >
               <label style={{ fontWeight: 700, fontSize: "0.9rem" }}>{f.label}</label>
               {f.type === "select" ? (
                 <select
