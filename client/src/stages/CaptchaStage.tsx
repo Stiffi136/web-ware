@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import type { StageProps } from "../types/game.ts";
-import { seededRandom, shuffleArray, pickRandom } from "../utils/random.ts";
+import { seededRandom, shuffleArray } from "../utils/random.ts";
 
 const CATEGORIES = [
   { label: "faces", prompt: "Select all faces", items: ["😀","😃","😄","😁","😆","😎","🤓","🥳","🤩","😇","😂","🥰","😍","😋","🤗","😏","🤔","😴"] },
