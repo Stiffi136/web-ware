@@ -7,6 +7,7 @@ import { LobbyView } from "../components/LobbyView.tsx";
 import { GameView } from "../components/GameView.tsx";
 import { ResultsView } from "../components/ResultsView.tsx";
 import { CountdownOverlay } from "../components/CountdownOverlay.tsx";
+import { VolumeSlider } from "../components/VolumeSlider.tsx";
 
 export function RoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -86,6 +87,7 @@ export function RoomPage() {
       {state.room.state === "countdown" && <LobbyView send={send} audio={audio} />}
       {state.room.state === "playing" && <GameView send={send} playSfx={audio.playSfx} duckMusic={audio.duckMusic} volume={audio.volume} />}
       {state.room.state === "results" && <ResultsView send={send} />}
+      <VolumeSlider volume={audio.volume} setVolume={audio.setVolume} />
     </>
   );
 }
