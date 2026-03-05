@@ -2,3 +2,4 @@
 {"id":"web-ware-278b","title":"Add GitHub Pages release workflow for client with WS env","status":"closed","type":"task","priority":2,"createdAt":"2026-03-05T07:52:15.628Z","updatedAt":"2026-03-05T07:53:14.425Z","closedAt":"2026-03-05T07:53:14.425Z"}
 {"id":"web-ware-774d","title":"Commit remaining client/server gameplay updates","status":"closed","type":"task","priority":2,"createdAt":"2026-03-05T07:58:42.858Z","updatedAt":"2026-03-05T07:58:53.316Z","closedAt":"2026-03-05T07:58:53.316Z"}
 {"id":"web-ware-2de0","title":"Fix GitHub Pages router basename for /web-ware path","status":"closed","type":"bug","priority":1,"createdAt":"2026-03-05T08:08:26.728Z","updatedAt":"2026-03-05T08:08:49.458Z","closedAt":"2026-03-05T08:08:49.458Z"}
+{"id":"web-ware-624b","title":"Add playful SVG favicon with double W","status":"closed","type":"task","priority":2,"createdAt":"2026-03-05T08:10:37.634Z","updatedAt":"2026-03-05T08:11:08.775Z","closedAt":"2026-03-05T08:11:08.775Z"}
