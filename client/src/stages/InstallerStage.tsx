@@ -87,34 +87,19 @@ const LEGIT_STEPS: { title: string; body: string }[] = [
 type FooterButton = {
   action: "decline" | "next" | "accept";
   label: string;
-  left: number;
 };
 
-type ButtonLayout = [FooterButton, FooterButton, FooterButton];
+type ButtonPair = [FooterButton, FooterButton];
 
-const BUTTON_DEFS: { action: "decline" | "next" | "accept"; label: string }[] = [
-  { action: "decline", label: "Decline" },
-  { action: "next", label: "Next >" },
-  { action: "accept", label: "Accept" },
-];
+const FIXED_SLOTS = [15, 60] as const;
 
-const LEFT_SLOTS: [number, number, number][] = [
-  [0, 35, 70],
-  [0, 40, 75],
-  [5, 45, 80],
-  [10, 38, 68],
-  [0, 30, 65],
-  [5, 50, 78],
-  [15, 45, 75],
-];
-
-function makeButtonLayout(rand: () => number): ButtonLayout {
-  const slots = LEFT_SLOTS[Math.floor(rand() * LEFT_SLOTS.length)]!;
-  const order = shuffleArray([...BUTTON_DEFS], rand);
-  return order.map((btn, i) => ({
-    ...btn,
-    left: slots[i]!,
-  })) as ButtonLayout;
+function makeButtonPair(step: WizardStep, rand: () => number): ButtonPair {
+  const decline: FooterButton = { action: "decline", label: "Decline" };
+  const positive: FooterButton =
+    step.correct === "accept" || step.isTrap
+      ? { action: "accept", label: "Accept" }
+      : { action: "next", label: "Next >" };
+  return shuffleArray([decline, positive], rand) as ButtonPair;
 }
 
 function makeSteps(difficulty: number, rand: () => number): WizardStep[] {
@@ -187,9 +172,9 @@ export function InstallerStage({ difficulty, seed, onSubmit }: StageProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [restartChecked, setRestartChecked] = useState(true);
 
-  // Generate button layout per step (deterministic from seed + step index)
+  // Generate button pair per step (deterministic from seed + step index)
   const layout = useMemo(() => {
-    return steps.map((_, i) => makeButtonLayout(seededRandom(seed + i + 1000)));
+    return steps.map((s, i) => makeButtonPair(s, seededRandom(seed + i + 1000)));
   }, [steps, seed]);
 
   const isFinish = currentStep >= steps.length;
@@ -331,7 +316,7 @@ export function InstallerStage({ difficulty, seed, onSubmit }: StageProps) {
           )}
         </div>
 
-        {/* Footer with 3 buttons */}
+        {/* Footer */}
         <div
           style={{
             borderTop: "1px solid #ccc",
@@ -347,7 +332,7 @@ export function InstallerStage({ difficulty, seed, onSubmit }: StageProps) {
               onClick={handleFinish}
               style={{
                 position: "absolute",
-                left: `${String(buttons[1]!.left)}%`,
+                left: `${String(FIXED_SLOTS[0])}%`,
                 top: 10,
                 fontSize: "0.85rem",
                 padding: "6px 20px",
@@ -356,29 +341,27 @@ export function InstallerStage({ difficulty, seed, onSubmit }: StageProps) {
               Finish
             </button>
           ) : (
-            <>
-              {buttons.map((btn) => (
-                <button
-                  key={btn.action}
-                  onClick={() => handleButton(btn.action)}
-                  style={{
-                    position: "absolute",
-                    left: `${String(btn.left)}%`,
-                    top: 10,
-                    background: "#e5e7eb",
-                    border: "1px solid #aaa",
-                    borderRadius: 6,
-                    padding: "6px 16px",
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    fontWeight: 600,
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  {btn.label}
-                </button>
-              ))}
-            </>
+            buttons.map((btn, i) => (
+              <button
+                key={btn.action}
+                onClick={() => handleButton(btn.action)}
+                style={{
+                  position: "absolute",
+                  left: `${String(FIXED_SLOTS[i])}%`,
+                  top: 10,
+                  background: "#e5e7eb",
+                  border: "1px solid #aaa",
+                  borderRadius: 6,
+                  padding: "6px 16px",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  fontWeight: 600,
+                  fontSize: "0.85rem",
+                }}
+              >
+                {btn.label}
+              </button>
+            ))
           )}
         </div>
       </div>
