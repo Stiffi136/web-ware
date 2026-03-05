@@ -40,18 +40,22 @@ function send(ws: GameSocket, data: Record<string, unknown>): void {
 }
 
 function handleJoin(ws: GameSocket, msg: { roomId: string; playerName: string }): void {
-  let room = getRoom(msg.roomId);
-  if (!room) {
-    room = createRoom();
-    // Override ID if client provided one (empty = auto-generate)
-    if (msg.roomId) {
-      // Room didn't exist, but client specified an ID - we already created with auto ID
-      // Just use the auto-generated one
+  // If this socket already joined, ignore duplicate join (React Strict Mode)
+  if (ws.data.playerId) {
+    const existingRoom = getRoomForSocket(ws);
+    if (existingRoom) {
+      send(ws, { event: "room-state", room: roomToJSON(existingRoom), playerId: ws.data.playerId });
+      return;
     }
   }
 
+  let room = getRoom(msg.roomId);
+  if (!room) {
+    room = createRoom();
+  }
+
   if (room.state !== "lobby") {
-    send(ws, { event: "error", message: "Spiel laeuft bereits" });
+    send(ws, { event: "error", message: "Game already in progress" });
     return;
   }
 

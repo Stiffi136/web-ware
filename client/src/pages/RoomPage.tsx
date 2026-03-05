@@ -14,21 +14,20 @@ export function RoomPage() {
   const { state } = useGame();
   const { send } = useWebSocket();
   const audio = useAudio();
-  const joinedRef = useRef(false);
-
+  // Capture roomId at mount time so URL updates don't re-trigger join
+  const initialRoomId = useRef(roomId);
   useEffect(() => {
     if (!state.playerName) {
       navigate("/");
       return;
     }
-    if (joinedRef.current) return;
-    joinedRef.current = true;
+    const rid = initialRoomId.current;
     send({
       event: "join",
-      roomId: roomId === "new" ? "" : (roomId ?? ""),
+      roomId: rid === "new" ? "" : (rid ?? ""),
       playerName: state.playerName,
     });
-  }, [roomId, state.playerName, send, navigate]);
+  }, [state.playerName, send, navigate]);
 
   // Update URL when server assigns room ID
   useEffect(() => {
@@ -58,7 +57,7 @@ export function RoomPage() {
     }
     if (roomState === "results" && prevStateRef.current === "playing") {
       audio.stopMusic();
-      audio.playSfx("/audio/finish-whistle.mp3");
+      audio.playSfx("/audio/finish.mp3");
     }
     prevStateRef.current = roomState;
   }, [state.room?.state, state.room, state.playerId, audio]);

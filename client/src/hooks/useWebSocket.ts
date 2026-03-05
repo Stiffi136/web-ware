@@ -2,15 +2,30 @@ import { useEffect, useRef, useCallback } from "react";
 import { useGame } from "../context/GameContext.tsx";
 import type { ClientMessage, ServerMessage } from "../types/protocol.ts";
 
-const WS_URL = import.meta.env.VITE_WS_URL ?? "ws://localhost:3001/ws";
+function getWsUrl(): string {
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL as string;
+  }
+  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  return `${proto}//${location.host}/ws`;
+}
 
 export function useWebSocket() {
   const { dispatch } = useGame();
   const wsRef = useRef<WebSocket | null>(null);
+  const queueRef = useRef<ClientMessage[]>([]);
 
   useEffect(() => {
-    const ws = new WebSocket(WS_URL);
+    const url = getWsUrl();
+    const ws = new WebSocket(url);
     wsRef.current = ws;
+
+    ws.addEventListener("open", () => {
+      for (const msg of queueRef.current) {
+        ws.send(JSON.stringify(msg));
+      }
+      queueRef.current = [];
+    });
 
     ws.addEventListener("message", (e) => {
       const msg = JSON.parse(String(e.data)) as ServerMessage;
@@ -46,18 +61,27 @@ export function useWebSocket() {
     });
 
     ws.addEventListener("close", () => {
-      wsRef.current = null;
+      // Only clear ref if this is still the active WebSocket
+      // (Strict Mode: first WS close event fires after second mount sets wsRef)
+      if (wsRef.current === ws) {
+        wsRef.current = null;
+      }
     });
 
     return () => {
       ws.close();
       wsRef.current = null;
+      queueRef.current = [];
     };
   }, [dispatch]);
 
   const send = useCallback((msg: ClientMessage) => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(msg));
+    const ws = wsRef.current;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(msg));
+    } else {
+      // Queue message until connection is open
+      queueRef.current.push(msg);
     }
   }, []);
 

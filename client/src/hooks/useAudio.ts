@@ -18,7 +18,9 @@ export function useAudio() {
     musicRef.current = audio;
     return () => {
       audio.pause();
-      audio.src = "";
+      if (musicRef.current === audio) {
+        musicRef.current = null;
+      }
     };
   }, []);
 
