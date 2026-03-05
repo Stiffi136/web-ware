@@ -84,7 +84,7 @@ export function RoomPage() {
       {state.countdown > 0 && <CountdownOverlay seconds={state.countdown} />}
       {state.room.state === "lobby" && <LobbyView send={send} audio={audio} />}
       {state.room.state === "countdown" && <LobbyView send={send} audio={audio} />}
-      {state.room.state === "playing" && <GameView send={send} />}
+      {state.room.state === "playing" && <GameView send={send} playSfx={audio.playSfx} />}
       {state.room.state === "results" && <ResultsView send={send} />}
     </>
   );

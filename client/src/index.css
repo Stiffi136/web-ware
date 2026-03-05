@@ -334,6 +334,80 @@ body::after {
   }
 }
 
+/* ---- Feedback overlay ---- */
+.feedback-text {
+  font-size: clamp(4rem, 14vw, 8rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow:
+    3px 3px 0 rgba(0, 0, 0, 0.85),
+    6px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.feedback-time {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  text-transform: none;
+  letter-spacing: 0.05em;
+  margin-top: 8px;
+  text-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.85),
+    3px 3px 0 rgba(0, 0, 0, 0.15);
+}
+
+.feedback-correct {
+  color: var(--green);
+  animation: feedback-correct 0.9s ease-out forwards;
+}
+
+.feedback-incorrect {
+  color: var(--orange);
+  animation: feedback-incorrect 0.7s ease-out forwards;
+}
+
+@keyframes feedback-correct {
+  0% {
+    opacity: 1;
+    transform: scale(1.8);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes feedback-incorrect {
+  0% {
+    opacity: 1;
+    transform: scale(1.8);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* ---- Player list ---- */
 .player-list {
   list-style: none;

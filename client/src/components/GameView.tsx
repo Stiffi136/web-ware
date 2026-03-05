@@ -1,24 +1,28 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useGame } from "../context/GameContext.tsx";
 import { stageRegistry, stageNames } from "../stages/registry.ts";
 import { ProgressBar } from "./ProgressBar.tsx";
 import { Scoreboard } from "./Scoreboard.tsx";
+import { FeedbackOverlay } from "./FeedbackOverlay.tsx";
 import type { ClientMessage } from "../types/protocol.ts";
 
 type Props = {
   send: (msg: ClientMessage) => void;
+  playSfx: (src: string) => void;
 };
 
-export function GameView({ send }: Props) {
+export function GameView({ send, playSfx }: Props) {
   const { state, dispatch } = useGame();
   const room = state.room!;
   const me = room.players.find((p) => p.id === state.playerId);
   const stageIndex = me?.currentStage ?? 0;
   const stageConfig = room.stages[stageIndex];
+  const [feedback, setFeedback] = useState<{ result: "correct" | "incorrect"; timeMs: number } | null>(null);
 
   const handleSubmit = useCallback(
     (success: boolean) => {
       const timeMs = Date.now() - state.currentStageStartTime;
+      setFeedback({ result: success ? "correct" : "incorrect", timeMs });
       send({
         event: "stage-complete",
         stageIndex,
@@ -50,6 +54,14 @@ export function GameView({ send }: Props) {
 
   return (
     <div className="page">
+      {feedback && (
+        <FeedbackOverlay
+          result={feedback.result}
+          timeMs={feedback.timeMs}
+          onDone={() => setFeedback(null)}
+          playSfx={playSfx}
+        />
+      )}
       <ProgressBar />
       <div style={{ textAlign: "center", marginBottom: 4 }}>
         <span style={{ fontWeight: 700, opacity: 0.6, fontSize: "0.9rem" }}>
