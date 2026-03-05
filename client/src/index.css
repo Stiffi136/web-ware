@@ -1,6 +1,6 @@
 :root {
-  --paper: url("/img/texture.png");
-  --noise: url("/img/grain.png");
+  --paper: url("../img/texture.png");
+  --noise: url("../img/grain.png");
   --ui-font: "Trebuchet MS", "Arial Rounded MT Bold", "Segoe UI", Verdana,
     sans-serif;
 

@@ -7,6 +7,7 @@ export function HomePage() {
   const [name, setName] = useState(state.playerName);
   const [roomCode, setRoomCode] = useState("");
   const navigate = useNavigate();
+  const bannerSrc = `${import.meta.env.BASE_URL}img/banner.png`;
 
   const canProceed = name.trim().length > 0;
 
@@ -27,7 +28,7 @@ export function HomePage() {
     <div className="page" style={{ justifyContent: "center", alignItems: "center", minHeight: "100dvh" }}>
       <div className="crayon-card" style={{ background: "var(--orange)", transform: "rotate(-0.5deg)", textAlign: "center", maxWidth: 480, width: "100%" }}>
         <div className="banner-frame edgefx" style={{ borderWidth: 4 }}>
-          <img src="/img/banner.png" alt="WebWare" className="banner-img crayon-ink" />
+          <img src={bannerSrc} alt="WebWare" className="banner-img crayon-ink" />
         </div>
         <h1 className="crayon-title" style={{ fontSize: "clamp(2.4rem, 7vw, 4rem)", marginBottom: 16 }}>
           WEBWARE

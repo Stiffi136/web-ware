@@ -1,6 +1,15 @@
 import { useRef, useCallback, useEffect, useState } from "react";
 
 const VOLUME_KEY = "webware-volume";
+const BASE_URL = import.meta.env.BASE_URL;
+
+function resolveAssetUrl(path: string): string {
+  if (/^(?:[a-z]+:)?\/\//i.test(path) || path.startsWith("data:") || path.startsWith("blob:")) {
+    return path;
+  }
+  const normalized = path.startsWith("/") ? path.slice(1) : path;
+  return `${BASE_URL}${normalized}`;
+}
 
 function getSavedVolume(): number {
   const saved = localStorage.getItem(VOLUME_KEY);
@@ -12,7 +21,7 @@ export function useAudio() {
   const [volume, setVolumeState] = useState(getSavedVolume);
 
   useEffect(() => {
-    const audio = new Audio("/audio/music.mp3");
+    const audio = new Audio(resolveAssetUrl("audio/music.mp3"));
     audio.loop = true;
     audio.volume = getSavedVolume();
     musicRef.current = audio;
@@ -53,7 +62,7 @@ export function useAudio() {
 
   const playSfx = useCallback(
     (src: string) => {
-      const sfx = new Audio(src);
+      const sfx = new Audio(resolveAssetUrl(src));
       sfx.volume = volume;
       sfx.play().catch(() => {});
     },
