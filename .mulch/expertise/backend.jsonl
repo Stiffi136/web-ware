@@ -1,0 +1,1 @@
+{"type":"convention","content":"In this monorepo, the Bun runtime service is under server/src. Docker builds should copy server/package.json and server/src (or COPY server/ with WORKDIR /app/server), not root src/.","classification":"tactical","recorded_at":"2026-03-05T07:47:57.277Z","id":"mx-f86e0c"}
