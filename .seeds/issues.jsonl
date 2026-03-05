@@ -4,3 +4,4 @@
 {"id":"web-ware-2de0","title":"Fix GitHub Pages router basename for /web-ware path","status":"closed","type":"bug","priority":1,"createdAt":"2026-03-05T08:08:26.728Z","updatedAt":"2026-03-05T08:08:49.458Z","closedAt":"2026-03-05T08:08:49.458Z"}
 {"id":"web-ware-624b","title":"Add playful SVG favicon with double W","status":"closed","type":"task","priority":2,"createdAt":"2026-03-05T08:10:37.634Z","updatedAt":"2026-03-05T08:11:08.775Z","closedAt":"2026-03-05T08:11:08.775Z"}
 {"id":"web-ware-6931","title":"Adjust favicon colors to blue and orange","status":"closed","type":"task","priority":3,"createdAt":"2026-03-05T08:11:54.896Z","updatedAt":"2026-03-05T08:12:17.269Z","closedAt":"2026-03-05T08:12:17.269Z"}
+{"id":"web-ware-f42e","title":"Fix GitHub Pages image 404 from absolute /img paths","status":"closed","type":"bug","priority":1,"createdAt":"2026-03-05T08:15:25.880Z","updatedAt":"2026-03-05T08:16:51.957Z","closedAt":"2026-03-05T08:16:51.957Z"}
