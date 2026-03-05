@@ -1,84 +1,107 @@
 import { useState, useMemo } from "react";
 import type { StageProps } from "../types/game.ts";
-import { seededRandom } from "../utils/random.ts";
+import { seededRandom, shuffleArray, pickRandom } from "../utils/random.ts";
 
-const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-const DISTRACTORS = ["!@#$%", "Il1|", "O0Oo"];
+const CATEGORIES = [
+  { label: "faces", prompt: "Select all faces", items: ["😀","😃","😄","😁","😆","😎","🤓","🥳","🤩","😇","😂","🥰","😍","😋","🤗","😏","🤔","😴"] },
+  { label: "animals", prompt: "Select all animals", items: ["🐶","🐱","🐭","🐰","🐻","🐼","🐸","🦊","🐵","🐔","🐧","🐢","🐍","🦋","🐝","🐞","🐳","🦄"] },
+  { label: "food", prompt: "Select all food", items: ["🍎","🍐","🍊","🍌","🍉","🍇","🍕","🍔","🌮","🍩","🍪","🧁","🍰","🍣","🥐","🍟","🌭","🥑"] },
+  { label: "vehicles", prompt: "Select all vehicles", items: ["🚗","🚕","🚙","🚌","🏎️","🚓","🚑","🚒","🚲","✈️","🚀","🛵","🚁","⛵","🚂","🚇","🛻","🚜"] },
+  { label: "plants", prompt: "Select all plants", items: ["🌵","🌲","🌳","🌴","🌱","🌿","🌺","🌻","🌹","🌷","🌼","🌸","🍀","🎋","🍁","🌾","🪴","🎄"] },
+  { label: "sports", prompt: "Select all sports", items: ["⚽","🏀","🏈","⚾","🎾","🏐","🏓","🏸","🎱","⛳","🏹","🥊","🏒","🎣","🛹","🏋️","⛷️","🤿"] },
+] as const;
+
+function getGridConfig(difficulty: number) {
+  if (difficulty >= 4) return { cols: 4, total: 16 };
+  return { cols: 3, total: 9 };
+}
+
+function getTargetCount(difficulty: number) {
+  const counts: Record<number, number> = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 6 };
+  return counts[difficulty] ?? 2;
+}
 
 export function CaptchaStage({ difficulty, seed, onSubmit }: StageProps) {
-  const captchaText = useMemo(() => {
+  const puzzle = useMemo(() => {
     const rand = seededRandom(seed);
-    const len = 4 + difficulty;
-    let text = "";
-    for (let i = 0; i < len; i++) {
-      if (difficulty >= 3 && rand() < 0.2) {
-        const d = DISTRACTORS[Math.floor(rand() * DISTRACTORS.length)]!;
-        text += d[Math.floor(rand() * d.length)];
-      } else {
-        text += CHARS[Math.floor(rand() * CHARS.length)];
-      }
+    const { total } = getGridConfig(difficulty);
+    const targetCount = getTargetCount(difficulty);
+
+    const targetIdx = Math.floor(rand() * CATEGORIES.length);
+    const target = CATEGORIES[targetIdx]!;
+
+    const distractorCategories = CATEGORIES.filter((_, i) => i !== targetIdx);
+
+    const targetItems = shuffleArray([...target.items], rand).slice(0, targetCount);
+
+    const distractorPool: string[] = [];
+    for (const cat of distractorCategories) {
+      distractorPool.push(...cat.items);
     }
-    return text;
+    const distractors = shuffleArray(distractorPool, rand).slice(0, total - targetCount);
+
+    const cells = shuffleArray(
+      [
+        ...targetItems.map((emoji) => ({ emoji, correct: true })),
+        ...distractors.map((emoji) => ({ emoji, correct: false })),
+      ],
+      rand,
+    );
+
+    return { prompt: target.prompt, cells };
   }, [difficulty, seed]);
 
-  const [input, setInput] = useState("");
+  const [selected, setSelected] = useState<Set<number>>(() => new Set());
 
-  const handleSubmit = () => {
-    onSubmit(input === captchaText);
+  const toggle = (idx: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
   };
 
-  const rotation = useMemo(() => {
-    const rand = seededRandom(seed + 99);
-    return captchaText.split("").map(() => (rand() - 0.5) * difficulty * 8);
-  }, [captchaText, difficulty, seed]);
+  const handleSubmit = () => {
+    const correct = puzzle.cells.every(
+      (cell, i) => cell.correct === selected.has(i),
+    );
+    onSubmit(correct);
+  };
 
-  const distortion = Math.min(difficulty * 0.3, 1.5);
+  const { cols } = getGridConfig(difficulty);
 
   return (
     <div className="flex-col gap-md" style={{ alignItems: "center" }}>
-      <p className="stage-prompt">Type the captcha</p>
+      <p className="stage-prompt">{puzzle.prompt}</p>
       <div
-        className="crayon-card"
         style={{
-          background: "#e8e0d0",
-          padding: "20px 28px",
-          userSelect: "none",
-          textAlign: "center",
-          filter: `url(#crayon) blur(${String(distortion)}px)`,
-          transform: `rotate(${String((difficulty - 3) * 0.5)}deg)`,
+          display: "grid",
+          gridTemplateColumns: `repeat(${String(cols)}, 1fr)`,
+          gap: "8px",
+          width: "min(360px, 100%)",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "center", gap: "2px" }}>
-          {captchaText.split("").map((ch, i) => (
-            <span
-              key={i}
-              style={{
-                display: "inline-block",
-                fontSize: `clamp(1.8rem, 4vw, 2.8rem)`,
-                fontWeight: 900,
-                fontFamily: "monospace",
-                transform: `rotate(${String(rotation[i])}deg) translateY(${String(Math.sin(i) * difficulty * 2)}px)`,
-                textDecoration: difficulty >= 4 ? "line-through" : undefined,
-                opacity: 0.7 + Math.random() * 0.3,
-              }}
-            >
-              {ch}
-            </span>
-          ))}
-        </div>
-      </div>
-      <div className="input-frame edgefx" style={{ width: "min(320px, 100%)" }}>
-        <input
-          className="crayon-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSubmit();
-          }}
-          placeholder="Type here..."
-          autoFocus
-          autoComplete="off"
-        />
+        {puzzle.cells.map((cell, i) => (
+          <button
+            key={i}
+            onClick={() => toggle(i)}
+            className="crayon-btn edgefx"
+            style={{
+              fontSize: "clamp(1.6rem, 4vw, 2.4rem)",
+              aspectRatio: "1",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: selected.has(i) ? "var(--accent, #b8d8ba)" : "#e8e0d0",
+              outline: selected.has(i) ? "3px solid var(--accent-dark, #6a9b6c)" : "none",
+              cursor: "pointer",
+              transition: "background 0.15s, outline 0.15s",
+            }}
+          >
+            {cell.emoji}
+          </button>
+        ))}
       </div>
       <button className="crayon-btn primary edgefx" onClick={handleSubmit}>
         Submit
