@@ -7,6 +7,7 @@ import { DownloadButtonStage } from "./DownloadButtonStage.tsx";
 import { OnlineShopStage } from "./OnlineShopStage.tsx";
 import { InstallerStage } from "./InstallerStage.tsx";
 import { CookieBannerStage } from "./CookieBannerStage.tsx";
+import { AgeVerificationStage } from "./AgeVerificationStage.tsx";
 
 export const stageRegistry: Record<string, FC<StageProps>> = {
   captcha: CaptchaStage,
@@ -16,6 +17,7 @@ export const stageRegistry: Record<string, FC<StageProps>> = {
   "online-shop": OnlineShopStage,
   installer: InstallerStage,
   "cookie-banner": CookieBannerStage,
+  "age-verification": AgeVerificationStage,
 };
 
 export const stageNames: Record<string, string> = {
@@ -26,4 +28,5 @@ export const stageNames: Record<string, string> = {
   "online-shop": "Online Shop",
   installer: "Installer",
   "cookie-banner": "Cookie Banner",
+  "age-verification": "Age Verification",
 };
