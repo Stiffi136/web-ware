@@ -2,8 +2,10 @@ import { handleMessage, handleClose } from "./game.ts";
 import type { WSData } from "./types.ts";
 
 const PORT = Number(process.env["PORT"] ?? 3001);
+const HOST = process.env["HOST"] ?? "0.0.0.0";
 
 Bun.serve({
+  hostname: HOST,
   port: PORT,
   fetch(req, server) {
     const url = new URL(req.url);
@@ -27,4 +29,4 @@ Bun.serve({
   },
 });
 
-console.log(`WebWare server running on port ${String(PORT)}`);
+console.log(`WebWare server running on ${HOST}:${String(PORT)}`);
