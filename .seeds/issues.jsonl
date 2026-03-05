@@ -7,3 +7,4 @@
 {"id":"web-ware-f42e","title":"Fix GitHub Pages image 404 from absolute /img paths","status":"closed","type":"bug","priority":1,"createdAt":"2026-03-05T08:15:25.880Z","updatedAt":"2026-03-05T08:16:51.957Z","closedAt":"2026-03-05T08:16:51.957Z"}
 {"id":"web-ware-beb7","title":"Harden Railway WebSocket deploy (host binding and port env)","status":"closed","type":"bug","priority":1,"createdAt":"2026-03-05T08:19:45.309Z","updatedAt":"2026-03-05T08:20:23.125Z","closedAt":"2026-03-05T08:20:23.125Z"}
 {"id":"web-ware-3924","title":"Align Docker EXPOSE with Railway port 8080","status":"closed","type":"bug","priority":1,"createdAt":"2026-03-05T08:21:51.813Z","updatedAt":"2026-03-05T08:22:10.582Z","closedAt":"2026-03-05T08:22:10.582Z"}
+{"id":"web-ware-4d24","title":"Add root README with gameplay guide and live link","status":"closed","type":"task","priority":2,"createdAt":"2026-03-05T08:30:56.669Z","updatedAt":"2026-03-05T08:32:05.926Z","closedAt":"2026-03-05T08:32:05.926Z"}
