@@ -103,9 +103,9 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
     return buildConstraint(difficulty, rand);
   }, [difficulty, seed]);
 
-  const [day, setDay] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
+  const [day, setDay] = useState("1");
+  const [month, setMonth] = useState("1");
+  const [year, setYear] = useState("2026");
 
   const handleSubmit = () => {
     const d = Number(day);
@@ -151,7 +151,6 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
               onChange={(e) => setDay(e.target.value)}
               style={{ width: "100%", textAlign: "center", maxHeight: "200px" }}
             >
-              <option value="">TT</option>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
                 <option key={d} value={String(d)}>{String(d)}</option>
               ))}
@@ -165,7 +164,6 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
               onChange={(e) => setMonth(e.target.value)}
               style={{ width: "100%", textAlign: "center", maxHeight: "200px" }}
             >
-              <option value="">MM</option>
               {MONTH_NAMES.map((name, i) => (
                 <option key={i} value={String(i + 1)}>{name}</option>
               ))}
@@ -179,7 +177,6 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
               onChange={(e) => setYear(e.target.value)}
               style={{ width: "100%", textAlign: "center", maxHeight: "200px" }}
             >
-              <option value="">JJJJ</option>
               {Array.from({ length: 127 }, (_, i) => 2026 - i).map((y) => (
                 <option key={y} value={String(y)}>{String(y)}</option>
               ))}
