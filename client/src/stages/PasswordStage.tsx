@@ -119,16 +119,42 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
   );
 
   const [placed, setPlaced] = useState<Token[]>([]);
+  const [preview, setPreview] = useState<{ ghostId: string; idx: number } | null>(null);
   const dragSrc = useRef<{ zone: "tray" | "builder"; id: string; idx: number } | null>(null);
 
   const available = tokens.filter((t) => !placed.some((p) => p.id === t.id));
   const password = placed.map((t) => t.text).join("");
 
+  // Compute preview placement for ghost
+  const previewResult = useMemo(() => {
+    if (!preview) return null;
+    const src = dragSrc.current;
+    if (!src) return null;
+
+    if (src.zone === "tray") {
+      const tok = tokens.find((t) => t.id === preview.ghostId);
+      if (!tok) return null;
+      const next = [...placed];
+      next.splice(preview.idx, 0, tok);
+      return { items: next, ghostIdx: preview.idx };
+    } else {
+      const next = [...placed];
+      const [moved] = next.splice(src.idx, 1);
+      const targetIdx = preview.idx > src.idx ? preview.idx - 1 : preview.idx;
+      next.splice(targetIdx, 0, moved!);
+      return { items: next, ghostIdx: targetIdx };
+    }
+  }, [preview, placed, tokens]);
+
+  const displayPlaced = previewResult?.items ?? placed;
+  const ghostIdx = previewResult?.ghostIdx ?? -1;
+  const displayPassword = displayPlaced.map((t) => t.text).join("");
+
   const ruleResults = rules.map((r) => ({
     label: r.label,
-    passed: r.test(password),
+    passed: r.test(displayPassword),
   }));
-  const allPassed = ruleResults.every((r) => r.passed);
+  const allPassed = rules.every((r) => r.test(password));
 
   /* ---- drag helpers ---- */
   const onTrayDragStart = (tok: Token) => {
@@ -137,6 +163,11 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
 
   const onBuilderDragStart = (tok: Token, idx: number) => {
     dragSrc.current = { zone: "builder", id: tok.id, idx };
+  };
+
+  const onDragEnd = () => {
+    setPreview(null);
+    dragSrc.current = null;
   };
 
   const onBuilderDrop = (targetIdx: number) => {
@@ -161,6 +192,7 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
         return next;
       });
     }
+    setPreview(null);
     dragSrc.current = null;
   };
 
@@ -170,6 +202,7 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
     const tok = tokens.find((t) => t.id === src.id);
     if (!tok) return;
     setPlaced((prev) => [...prev, tok]);
+    setPreview(null);
     dragSrc.current = null;
   };
 
@@ -177,8 +210,11 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
     const src = dragSrc.current;
     if (!src || src.zone !== "builder") return;
     setPlaced((prev) => prev.filter((p) => p.id !== src.id));
+    setPreview(null);
     dragSrc.current = null;
   };
+
+  const clearPreview = () => setPreview(null);
 
   const chipStyle = (bg: string): React.CSSProperties => ({
     background: bg,
@@ -224,6 +260,15 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
           onDragOver={(e) => {
             e.preventDefault();
             e.dataTransfer.dropEffect = "move";
+            const src = dragSrc.current;
+            if (src) {
+              setPreview({ ghostId: src.id, idx: placed.length });
+            }
+          }}
+          onDragLeave={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+              clearPreview();
+            }
           }}
           onDrop={(e) => {
             e.preventDefault();
@@ -238,37 +283,50 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
             alignItems: "center",
           }}
         >
-          {placed.length === 0 && (
+          {displayPlaced.length === 0 && !preview && (
             <span style={{ opacity: 0.35, fontStyle: "italic", pointerEvents: "none" }}>
               Drag blocks here to build password…
             </span>
           )}
-          {placed.map((tok, idx) => (
-            <span
-              key={tok.id}
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.effectAllowed = "move";
-                onBuilderDragStart(tok, idx);
-              }}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = "move";
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onBuilderDrop(idx);
-              }}
-              style={chipStyle("var(--yellow)")}
-            >
-              {tok.text}
-            </span>
-          ))}
+          {displayPlaced.map((tok, idx) => {
+            const isGhost = idx === ghostIdx;
+            return (
+              <span
+                key={`${tok.id}-${idx}`}
+                draggable={!isGhost}
+                onDragStart={(e) => {
+                  if (isGhost) { e.preventDefault(); return; }
+                  e.dataTransfer.effectAllowed = "move";
+                  onBuilderDragStart(tok, idx);
+                }}
+                onDragEnd={onDragEnd}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.dataTransfer.dropEffect = "move";
+                  const src = dragSrc.current;
+                  if (src) {
+                    setPreview({ ghostId: src.id, idx });
+                  }
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onBuilderDrop(idx);
+                }}
+                style={{
+                  ...chipStyle("var(--yellow)"),
+                  ...(isGhost ? { opacity: 0.4, borderStyle: "dashed" } : {}),
+                }}
+              >
+                {tok.text}
+              </span>
+            );
+          })}
         </div>
 
         {/* Live preview */}
-        {password && (
+        {displayPassword && (
           <p
             style={{
               fontFamily: "monospace",
@@ -277,10 +335,10 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
               margin: "8px 0 0",
               wordBreak: "break-all",
               textAlign: "center",
-              opacity: 0.7,
+              opacity: preview ? 0.45 : 0.7,
             }}
           >
-            {password}
+            {displayPassword}
           </p>
         )}
 
@@ -289,6 +347,8 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
           onDragOver={(e) => {
             e.preventDefault();
             e.dataTransfer.dropEffect = "move";
+            // Clear builder preview when dragging back to tray
+            if (preview) clearPreview();
           }}
           onDrop={(e) => {
             e.preventDefault();
@@ -311,19 +371,26 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
               Drag blocks back here to remove
             </span>
           )}
-          {available.map((tok) => (
-            <span
-              key={tok.id}
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.effectAllowed = "move";
-                onTrayDragStart(tok);
-              }}
-              style={chipStyle("var(--white)")}
-            >
-              {tok.text}
-            </span>
-          ))}
+          {available.map((tok) => {
+            const isDragging = preview !== null && dragSrc.current?.zone === "tray" && dragSrc.current.id === tok.id;
+            return (
+              <span
+                key={tok.id}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.effectAllowed = "move";
+                  onTrayDragStart(tok);
+                }}
+                onDragEnd={onDragEnd}
+                style={{
+                  ...chipStyle("var(--white)"),
+                  ...(isDragging ? { opacity: 0.3 } : {}),
+                }}
+              >
+                {tok.text}
+              </span>
+            );
+          })}
         </div>
       </div>
 
