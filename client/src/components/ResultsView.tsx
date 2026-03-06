@@ -1,4 +1,5 @@
 import { useGame } from "../context/GameContext.tsx";
+import { Scoreboard } from "./Scoreboard.tsx";
 import type { ClientMessage } from "../types/protocol.ts";
 
 type Props = {
@@ -19,6 +20,7 @@ export function ResultsView({ send }: Props) {
 
   return (
     <div className="page" style={{ alignItems: "center" }}>
+      <Scoreboard />
       <div
         className="crayon-card"
         style={{ background: "var(--yellow)", textAlign: "center", maxWidth: 480, width: "100%", transform: "rotate(-0.3deg)" }}

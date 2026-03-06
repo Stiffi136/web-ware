@@ -160,16 +160,16 @@ function handleStageComplete(
   // Check if all results for this stage are in
   const stageResults = room.stageResults.get(msg.stageIndex) ?? [];
   if (stageResults.length === room.players.length) {
-    // Award point to fastest successful player
+    // Award points to top 3: 1st=3pts, 2nd=2pts, 3rd=1pt
     const successful = stageResults
       .filter((r) => r.success)
       .sort((a, b) => a.timeMs - b.timeMs);
 
-    if (successful.length > 0) {
-      const winnerId = successful[0]!.playerId;
-      const winner = room.players.find((p) => p.id === winnerId);
-      if (winner) {
-        winner.score++;
+    const points = [3, 2, 1];
+    for (let i = 0; i < Math.min(successful.length, 3); i++) {
+      const player = room.players.find((p) => p.id === successful[i]!.playerId);
+      if (player) {
+        player.score += points[i]!;
       }
     }
 

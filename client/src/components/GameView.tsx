@@ -50,11 +50,13 @@ export function GameView({ send, playSfx, duckMusic, volume }: Props) {
 
   if (!stageConfig || me?.finished) {
     return (
-      <div className="page" style={{ alignItems: "center", justifyContent: "center", minHeight: "100dvh" }}>
-        <ProgressBar />
-        <div className="crayon-card" style={{ background: "var(--green)", textAlign: "center", maxWidth: 400 }}>
-          <h2 className="crayon-title" style={{ fontSize: "2rem" }}>Done!</h2>
-          <p style={{ fontWeight: 700 }}>Waiting for other players...</p>
+      <div className="game-layout">
+        <div className="page" style={{ alignItems: "center", justifyContent: "center", minHeight: "100dvh" }}>
+          <ProgressBar />
+          <div className="crayon-card" style={{ background: "var(--green)", textAlign: "center", maxWidth: 400 }}>
+            <h2 className="crayon-title" style={{ fontSize: "2rem" }}>Done!</h2>
+            <p style={{ fontWeight: 700 }}>Waiting for other players...</p>
+          </div>
         </div>
         <Scoreboard />
       </div>
@@ -68,43 +70,53 @@ export function GameView({ send, playSfx, duckMusic, volume }: Props) {
 
   if (feedback) {
     return (
-      <FeedbackOverlay
-        result={feedback.result}
-        timeMs={feedback.timeMs}
-        onDone={() => setFeedback(null)}
-        playSfx={playSfx}
-      />
+      <div className="game-layout">
+        <div className="page" />
+        <Scoreboard />
+        <FeedbackOverlay
+          result={feedback.result}
+          timeMs={feedback.timeMs}
+          onDone={() => setFeedback(null)}
+          playSfx={playSfx}
+        />
+      </div>
     );
   }
 
   if (difficultyUp) {
     return (
-      <DifficultyOverlay
-        difficulty={difficultyUp}
-        onDone={() => {
-          setDifficultyUp(null);
-          dispatch({ type: "reset-stage-timer" });
-        }}
-        volume={volume}
-        duckMusic={duckMusic}
-      />
+      <div className="game-layout">
+        <div className="page" />
+        <Scoreboard />
+        <DifficultyOverlay
+          difficulty={difficultyUp}
+          onDone={() => {
+            setDifficultyUp(null);
+            dispatch({ type: "reset-stage-timer" });
+          }}
+          volume={volume}
+          duckMusic={duckMusic}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="page">
-      <ProgressBar />
-      <div style={{ textAlign: "center", marginBottom: 4 }}>
-        <span style={{ fontWeight: 700, opacity: 0.6, fontSize: "0.9rem" }}>
-          Stage {stageIndex + 1}/{room.stages.length} &mdash; {stageNames[stageConfig.type] ?? stageConfig.type} (Lv.{stageConfig.difficulty})
-        </span>
+    <div className="game-layout">
+      <div className="page">
+        <ProgressBar />
+        <div style={{ textAlign: "center", marginBottom: 4 }}>
+          <span style={{ fontWeight: 700, opacity: 0.6, fontSize: "0.9rem" }}>
+            Stage {stageIndex + 1}/{room.stages.length} &mdash; {stageNames[stageConfig.type] ?? stageConfig.type} (Lv.{stageConfig.difficulty})
+          </span>
+        </div>
+        <StageComponent
+          key={`${stageConfig.type}-${String(stageIndex)}`}
+          difficulty={stageConfig.difficulty}
+          seed={stageConfig.seed}
+          onSubmit={handleSubmit}
+        />
       </div>
-      <StageComponent
-        key={`${stageConfig.type}-${String(stageIndex)}`}
-        difficulty={stageConfig.difficulty}
-        seed={stageConfig.seed}
-        onSubmit={handleSubmit}
-      />
       <Scoreboard />
     </div>
   );

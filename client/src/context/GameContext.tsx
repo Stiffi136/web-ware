@@ -148,20 +148,25 @@ function reducer(state: GameState, action: GameAction): GameState {
     case "stage-result": {
       const results = new Map(state.stageResults);
       results.set(action.stageIndex, action.results);
-      // Update scores from results
+      // Update scores: 1st=3pts, 2nd=2pts, 3rd=1pt
       if (!state.room) return { ...state, stageResults: results };
       const successful = action.results
         .filter((r) => r.success)
         .sort((a, b) => a.timeMs - b.timeMs);
-      const winnerId = successful.length > 0 ? successful[0]!.playerId : null;
+      const pointsMap = new Map<string, number>();
+      const pts = [3, 2, 1];
+      for (let i = 0; i < Math.min(successful.length, 3); i++) {
+        pointsMap.set(successful[i]!.playerId, pts[i]!);
+      }
       return {
         ...state,
         stageResults: results,
         room: {
           ...state.room,
-          players: state.room.players.map((p) =>
-            p.id === winnerId ? { ...p, score: p.score + 1 } : p,
-          ),
+          players: state.room.players.map((p) => {
+            const award = pointsMap.get(p.id);
+            return award ? { ...p, score: p.score + award } : p;
+          }),
         },
       };
     }
