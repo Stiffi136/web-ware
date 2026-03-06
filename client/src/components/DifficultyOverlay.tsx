@@ -23,7 +23,7 @@ export function DifficultyOverlay({ difficulty, onDone, playSfx, duckMusic }: Pr
       played.current = true;
       duckMusicRef.current(0.35);
       const idx = Math.floor(Math.random() * 3) + 1;
-      setTimeout(() => playSfxRef.current(`/audio/difficulty-increase-${String(idx)}.mp3`, ANNOUNCER_BOOST), 500);
+      playSfxRef.current(`/audio/difficulty-increase-${String(idx)}.mp3`, ANNOUNCER_BOOST);
     }
     const timer = setTimeout(() => {
       duckMusicRef.current(1);
