@@ -48,7 +48,7 @@ export function CaptchaStage({ difficulty, seed, onSubmit }: StageProps) {
       rand,
     );
 
-    return { prompt: target.prompt, cells };
+    return { prompt: target.prompt, cells, targetCount };
   }, [difficulty, seed]);
 
   const [selected, setSelected] = useState<Set<number>>(() => new Set());
@@ -73,7 +73,7 @@ export function CaptchaStage({ difficulty, seed, onSubmit }: StageProps) {
 
   return (
     <div className="flex-col gap-md" style={{ alignItems: "center" }}>
-      <p className="stage-prompt">{puzzle.prompt}</p>
+      <p className="stage-prompt">{puzzle.prompt} ({selected.size}/{puzzle.targetCount})</p>
       <div
         style={{
           display: "grid",
