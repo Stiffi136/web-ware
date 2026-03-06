@@ -47,7 +47,7 @@ export function DataFormStage({ difficulty, seed, onSubmit }: StageProps) {
   };
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">Fill in the form via Drag & Drop</p>
       <div
         className="crayon-card"
@@ -91,7 +91,7 @@ export function DataFormStage({ difficulty, seed, onSubmit }: StageProps) {
             );
           })}
         </div>
-        <div className="flex-col" style={{ gap: 8 }}>
+        <div className="flex-col" style={{ gap: 8, alignItems: "stretch" }}>
           {fields.map((f) => (
             <div
               key={f.id}

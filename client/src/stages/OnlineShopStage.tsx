@@ -39,7 +39,7 @@ export function OnlineShopStage({ difficulty, seed, onSubmit }: StageProps) {
   }, [difficulty, seed]);
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">
         Buy: <strong>{target.name}</strong>
       </p>

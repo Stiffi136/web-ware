@@ -203,7 +203,7 @@ export function InstallerStage({ difficulty, seed, onSubmit }: StageProps) {
     : layout[currentStep]!;
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">
         Install <strong>{programName}</strong> correctly — decline all bloatware!
       </p>
@@ -239,7 +239,7 @@ export function InstallerStage({ difficulty, seed, onSubmit }: StageProps) {
         {/* Body */}
         <div style={{ flex: 1, padding: "16px 20px", fontSize: "0.9rem" }}>
           {isFinish ? (
-            <div className="flex-col" style={{ gap: 12 }}>
+            <div className="flex-col" style={{ gap: 12, alignItems: "stretch" }}>
               <p style={{ fontWeight: 700, fontSize: "1rem" }}>
                 Setup Complete
               </p>
@@ -277,7 +277,7 @@ export function InstallerStage({ difficulty, seed, onSubmit }: StageProps) {
               </label>
             </div>
           ) : (
-            <div className="flex-col" style={{ gap: 10 }}>
+            <div className="flex-col" style={{ gap: 10, alignItems: "stretch" }}>
               <p style={{ fontWeight: 700, fontSize: "1rem" }}>
                 {step!.title}
               </p>

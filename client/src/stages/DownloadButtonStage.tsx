@@ -85,7 +85,7 @@ export function DownloadButtonStage({ difficulty, seed, onSubmit }: StageProps) 
   }, [difficulty, seed]);
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">
         Find this button:{" "}
         <span

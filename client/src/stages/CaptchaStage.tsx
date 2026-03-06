@@ -72,7 +72,7 @@ export function CaptchaStage({ difficulty, seed, onSubmit }: StageProps) {
   const { cols } = getGridConfig(difficulty);
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">{puzzle.prompt} ({selected.size}/{puzzle.targetCount})</p>
       <div
         style={{

@@ -278,6 +278,16 @@ body::after {
   gap: 18px;
 }
 
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gap-md {
+  gap: 16px;
+}
+
 /* ---- Game layout ---- */
 .game-layout {
   position: relative;

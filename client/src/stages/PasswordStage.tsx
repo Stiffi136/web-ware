@@ -220,7 +220,7 @@ export function PasswordStage({ difficulty, seed, onSubmit }: StageProps) {
   });
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">Build a valid password</p>
 
       <div

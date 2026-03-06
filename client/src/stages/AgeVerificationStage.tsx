@@ -121,7 +121,7 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
   const rules = describeConstraints(constraint);
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">Age Verification</p>
       <div
         className="crayon-card edgefx"

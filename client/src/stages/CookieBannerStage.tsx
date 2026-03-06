@@ -156,7 +156,7 @@ export function CookieBannerStage({ difficulty, seed, onSubmit }: StageProps) {
   };
 
   return (
-    <div className="flex-col gap-md" style={{ alignItems: "center" }}>
+    <div className="flex-col gap-md">
       <p className="stage-prompt">
         Accept only functional cookies on <strong>{config.siteName}</strong>
       </p>
