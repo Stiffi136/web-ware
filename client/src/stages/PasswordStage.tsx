@@ -62,8 +62,13 @@ function buildPuzzle(difficulty: number, rand: () => number) {
     });
   }
 
-  // ordering rules (kick in at higher difficulty)
-  if (difficulty >= 2) {
+  // ordering rule (max 1 position constraint)
+  if (difficulty >= 4) {
+    rules.push({
+      label: `"${n1}" must directly follow "${w1}"`,
+      test: (pw) => pw.includes(w1 + n1),
+    });
+  } else if (difficulty >= 2) {
     rules.push({
       label: `Must start with "${w1}"`,
       test: (pw) => pw.startsWith(w1),
@@ -79,20 +84,6 @@ function buildPuzzle(difficulty: number, rand: () => number) {
     rules.push({
       label: `Exactly ${String(dc)} digits`,
       test: (pw) => (pw.match(/\d/g) ?? []).length === dc,
-    });
-  }
-
-  if (difficulty >= 4) {
-    rules.push({
-      label: `"${n1}" must directly follow "${w1}"`,
-      test: (pw) => pw.includes(w1 + n1),
-    });
-  }
-
-  if (difficulty >= 5) {
-    rules.push({
-      label: `Exactly ${String(solution.length)} characters`,
-      test: (pw) => pw.length === solution.length,
     });
   }
 
