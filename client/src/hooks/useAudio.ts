@@ -44,6 +44,7 @@ export function useAudio() {
   const playMusic = useCallback((rate = 1) => {
     const m = musicRef.current;
     if (!m) return;
+    m.currentTime = 0;
     m.playbackRate = rate;
     m.play().catch(() => {
       // autoplay blocked
