@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useGame } from "../context/GameContext.tsx";
 import type { Difficulty } from "../types/game.ts";
 import type { ClientMessage } from "../types/protocol.ts";
@@ -13,6 +14,7 @@ export function LobbyView({ send, audio }: Props) {
   const me = room.players.find((p) => p.id === state.playerId);
   const isReady = me?.ready ?? false;
   const config = room.config;
+  const [copied, setCopied] = useState(false);
 
   const totalStages = config.stagesPerDifficulty * config.maxDifficulty;
   const estimatedMinutes = Math.round((totalStages * 10) / 60);
@@ -40,9 +42,17 @@ export function LobbyView({ send, audio }: Props) {
         <h1 className="crayon-title" style={{ fontSize: "clamp(2rem, 5vw, 3rem)", marginBottom: 8 }}>
           ROOM {room.id}
         </h1>
-        <p style={{ margin: 0, fontWeight: 700, opacity: 0.8 }}>
-          Share this code with your friends!
-        </p>
+        <button
+          className="crayon-btn edgefx"
+          style={{ marginTop: 8, background: "rgba(255,255,255,0.5)" }}
+          onClick={() => {
+            const url = `${window.location.origin}${import.meta.env.BASE_URL}room/${room.id}`;
+            navigator.clipboard.writeText(url).then(() => setCopied(true));
+            setTimeout(() => setCopied(false), 2000);
+          }}
+        >
+          {copied ? "Copied!" : "Copy Invite Link"}
+        </button>
       </div>
 
       <div

@@ -18,11 +18,11 @@ export function RoomPage() {
   // Capture roomId at mount time so URL updates don't re-trigger join
   const initialRoomId = useRef(roomId);
   useEffect(() => {
+    const rid = initialRoomId.current;
     if (!state.playerName) {
-      navigate("/");
+      navigate(`/?join=${encodeURIComponent(rid === "new" ? "" : (rid ?? ""))}`);
       return;
     }
-    const rid = initialRoomId.current;
     send({
       event: "join",
       roomId: rid === "new" ? "" : (rid ?? ""),

@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGame } from "../context/GameContext.tsx";
 
 export function HomePage() {
   const { state, dispatch } = useGame();
+  const [searchParams] = useSearchParams();
+  const joinParam = searchParams.get("join") ?? "";
   const [name, setName] = useState(state.playerName);
-  const [roomCode, setRoomCode] = useState("");
+  const [roomCode, setRoomCode] = useState(joinParam);
   const navigate = useNavigate();
   const bannerSrc = `${import.meta.env.BASE_URL}img/banner.png`;
 
@@ -43,7 +45,10 @@ export function HomePage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && canProceed) handleCreate();
+              if (e.key === "Enter" && canProceed) {
+                if (roomCode.trim()) handleJoin();
+                else handleCreate();
+              }
             }}
             placeholder="Enter your name..."
             maxLength={20}
