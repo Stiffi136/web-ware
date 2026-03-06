@@ -1,6 +1,7 @@
 import { useRef, useCallback, useEffect, useState } from "react";
 
 const VOLUME_KEY = "webware-volume";
+export const ANNOUNCER_BOOST = 2;
 const BASE_URL = import.meta.env.BASE_URL;
 
 function resolveAssetUrl(path: string): string {
@@ -62,9 +63,9 @@ export function useAudio() {
   }, []);
 
   const playSfx = useCallback(
-    (src: string) => {
+    (src: string, boost = 1) => {
       const sfx = new Audio(resolveAssetUrl(src));
-      sfx.volume = volume;
+      sfx.volume = Math.min(volume * boost, 1);
       sfx.play().catch(() => {});
     },
     [volume],

@@ -9,12 +9,11 @@ import type { ClientMessage } from "../types/protocol.ts";
 
 type Props = {
   send: (msg: ClientMessage) => void;
-  playSfx: (src: string) => void;
+  playSfx: (src: string, boost?: number) => void;
   duckMusic: (factor: number) => void;
-  volume: number;
 };
 
-export function GameView({ send, playSfx, duckMusic, volume }: Props) {
+export function GameView({ send, playSfx, duckMusic }: Props) {
   const { state, dispatch } = useGame();
   const room = state.room!;
   const me = room.players.find((p) => p.id === state.playerId);
@@ -94,7 +93,7 @@ export function GameView({ send, playSfx, duckMusic, volume }: Props) {
             setDifficultyUp(null);
             dispatch({ type: "reset-stage-timer" });
           }}
-          volume={volume}
+          playSfx={playSfx}
           duckMusic={duckMusic}
         />
       </div>

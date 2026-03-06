@@ -1,29 +1,29 @@
 import { useEffect, useRef } from "react";
+import { ANNOUNCER_BOOST } from "../hooks/useAudio.ts";
 
 type Props = {
   difficulty: number;
   onDone: () => void;
-  volume: number;
+  playSfx: (src: string, boost?: number) => void;
   duckMusic: (factor: number) => void;
 };
 
-const BASE_URL = import.meta.env.BASE_URL;
-
-export function DifficultyOverlay({ difficulty, onDone, volume, duckMusic }: Props) {
+export function DifficultyOverlay({ difficulty, onDone, playSfx, duckMusic }: Props) {
   const onDoneRef = useRef(onDone);
   const duckMusicRef = useRef(duckMusic);
   onDoneRef.current = onDone;
   duckMusicRef.current = duckMusic;
 
+  const playSfxRef = useRef(playSfx);
+  playSfxRef.current = playSfx;
+
   const played = useRef(false);
   useEffect(() => {
     if (!played.current) {
       played.current = true;
-      duckMusicRef.current(0.15);
+      duckMusicRef.current(0.35);
       const idx = Math.floor(Math.random() * 3) + 1;
-      const sfx = new Audio(`${BASE_URL}audio/difficulty-increase-${String(idx)}.mp3`);
-      sfx.volume = Math.min(volume * 2.25, 1);
-      setTimeout(() => sfx.play().catch(() => {}), 500);
+      setTimeout(() => playSfxRef.current(`/audio/difficulty-increase-${String(idx)}.mp3`, ANNOUNCER_BOOST), 500);
     }
     const timer = setTimeout(() => {
       duckMusicRef.current(1);

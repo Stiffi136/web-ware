@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useGame } from "../context/GameContext.tsx";
 import { useWebSocket } from "../hooks/useWebSocket.ts";
-import { useAudio } from "../hooks/useAudio.ts";
+import { useAudio, ANNOUNCER_BOOST } from "../hooks/useAudio.ts";
 import { LobbyView } from "../components/LobbyView.tsx";
 import { GameView } from "../components/GameView.tsx";
 import { ResultsView } from "../components/ResultsView.tsx";
@@ -58,16 +58,16 @@ export function RoomPage() {
     }
     if (roomState === "results" && prevStateRef.current === "playing") {
       audio.stopMusic();
-      audio.playSfx("/audio/finish.mp3");
+      audio.playSfx("/audio/finish.mp3", ANNOUNCER_BOOST);
     }
     prevStateRef.current = roomState;
   }, [state.room?.state, state.room, state.playerId, audio]);
 
   // Countdown SFX
   useEffect(() => {
-    if (state.countdown === 3) audio.playSfx("/audio/three.mp3");
-    if (state.countdown === 2) audio.playSfx("/audio/two.mp3");
-    if (state.countdown === 1) audio.playSfx("/audio/one.mp3");
+    if (state.countdown === 3) audio.playSfx("/audio/three.mp3", ANNOUNCER_BOOST);
+    if (state.countdown === 2) audio.playSfx("/audio/two.mp3", ANNOUNCER_BOOST);
+    if (state.countdown === 1) audio.playSfx("/audio/one.mp3", ANNOUNCER_BOOST);
   }, [state.countdown, audio]);
 
   if (!state.room) {
@@ -85,7 +85,7 @@ export function RoomPage() {
       {state.countdown > 0 && <CountdownOverlay seconds={state.countdown} />}
       {state.room.state === "lobby" && <LobbyView send={send} audio={audio} />}
       {state.room.state === "countdown" && <LobbyView send={send} audio={audio} />}
-      {state.room.state === "playing" && <GameView send={send} playSfx={audio.playSfx} duckMusic={audio.duckMusic} volume={audio.volume} />}
+      {state.room.state === "playing" && <GameView send={send} playSfx={audio.playSfx} duckMusic={audio.duckMusic} />}
       {state.room.state === "results" && <ResultsView send={send} />}
       <VolumeSlider volume={audio.volume} setVolume={audio.setVolume} />
     </>
