@@ -5,8 +5,8 @@ import { seededRandom, pickRandom } from "../utils/random.ts";
 const MIN_AGES = [6, 12, 16, 18, 21] as const;
 
 const MONTH_NAMES = [
-  "Januar", "Februar", "März", "April", "Mai", "Juni",
-  "Juli", "August", "September", "Oktober", "November", "Dezember",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
 const TODAY = { year: 2026, month: 3, day: 5 };
@@ -54,16 +54,16 @@ function buildConstraint(difficulty: number, rand: () => number): Constraint {
 
 function describeConstraints(c: Constraint): string[] {
   const lines: string[] = [];
-  lines.push(`Mindestalter: ${String(c.minAge)} Jahre`);
-  if (c.maxAge !== null) lines.push(`Maximalalter: ${String(c.maxAge)} Jahre`);
-  if (c.monthRule === "not-even-month") lines.push("Nicht in einem geraden Monat geboren");
-  else if (c.monthRule === "not-odd-month") lines.push("Nicht in einem ungeraden Monat geboren");
+  lines.push(`Minimum age: ${String(c.minAge)} years`);
+  if (c.maxAge !== null) lines.push(`Maximum age: ${String(c.maxAge)} years`);
+  if (c.monthRule === "not-even-month") lines.push("Not born in an even month");
+  else if (c.monthRule === "not-odd-month") lines.push("Not born in an odd month");
   else if (c.monthRule?.startsWith("not-month-")) {
     const idx = Number(c.monthRule.split("-")[2]);
-    lines.push(`Nicht im ${MONTH_NAMES[idx]!} geboren`);
+    lines.push(`Not born in ${MONTH_NAMES[idx]!}`);
   }
-  if (c.yearRule === "not-even-year") lines.push("Nicht in einem geraden Jahr geboren");
-  else if (c.yearRule === "not-odd-year") lines.push("Nicht in einem ungeraden Jahr geboren");
+  if (c.yearRule === "not-even-year") lines.push("Not born in an even year");
+  else if (c.yearRule === "not-odd-year") lines.push("Not born in an odd year");
   return lines;
 }
 
@@ -122,7 +122,7 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
 
   return (
     <div className="flex-col gap-md" style={{ alignItems: "center" }}>
-      <p className="stage-prompt">Altersverifizierung</p>
+      <p className="stage-prompt">Age Verification</p>
       <div
         className="crayon-card edgefx"
         style={{
@@ -134,7 +134,7 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
         }}
       >
         <p style={{ fontWeight: 600, marginBottom: "0.2rem" }}>
-          Gib ein gültiges Geburtsdatum ein:
+          Enter a valid date of birth:
         </p>
         <ul style={{ margin: 0, paddingLeft: "1.2rem", fontSize: "0.95rem" }}>
           {rules.map((r, i) => (
@@ -144,7 +144,7 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
 
         <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
           <div className="flex-col" style={{ alignItems: "center", flex: 1 }}>
-            <label style={{ fontSize: "0.8rem" }}>Tag</label>
+            <label style={{ fontSize: "0.8rem" }}>Day</label>
             <select
               className="input-frame"
               value={day}
@@ -157,7 +157,7 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
             </select>
           </div>
           <div className="flex-col" style={{ alignItems: "center", flex: 1.2 }}>
-            <label style={{ fontSize: "0.8rem" }}>Monat</label>
+            <label style={{ fontSize: "0.8rem" }}>Month</label>
             <select
               className="input-frame"
               value={month}
@@ -170,7 +170,7 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
             </select>
           </div>
           <div className="flex-col" style={{ alignItems: "center", flex: 1.5 }}>
-            <label style={{ fontSize: "0.8rem" }}>Jahr</label>
+            <label style={{ fontSize: "0.8rem" }}>Year</label>
             <select
               className="input-frame"
               value={year}
@@ -186,7 +186,7 @@ export function AgeVerificationStage({ difficulty, seed, onSubmit }: StageProps)
       </div>
 
       <button className="crayon-btn primary edgefx" onClick={handleSubmit}>
-        Verifizieren
+        Verify
       </button>
     </div>
   );
