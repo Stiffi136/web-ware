@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = {
   result: "correct" | "incorrect";
@@ -16,12 +16,17 @@ function formatTime(ms: number): string {
 }
 
 export function FeedbackOverlay({ result, timeMs, onDone, playSfx }: Props) {
+  const onDoneRef = useRef(onDone);
+  const playSfxRef = useRef(playSfx);
+  onDoneRef.current = onDone;
+  playSfxRef.current = playSfx;
+
   useEffect(() => {
-    playSfx(`/audio/${result}.mp3`);
+    playSfxRef.current(`/audio/${result}.mp3`);
     const duration = result === "correct" ? 900 : 700;
-    const timer = setTimeout(onDone, duration);
+    const timer = setTimeout(() => onDoneRef.current(), duration);
     return () => clearTimeout(timer);
-  }, [result, onDone, playSfx]);
+  }, [result]);
 
   return (
     <div className="countdown-overlay">
