@@ -71,7 +71,7 @@ export function LobbyView({ send, audio }: Props) {
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
           <div style={{ flex: 1, minWidth: 140 }}>
             <label style={{ display: "block", fontWeight: 700, marginBottom: 4, fontSize: "0.9rem" }}>
-              Max. Schwierigkeit
+              Max Difficulty
             </label>
             <select
               value={config.maxDifficulty}
@@ -92,7 +92,7 @@ export function LobbyView({ send, audio }: Props) {
           </div>
           <div style={{ flex: 1, minWidth: 140 }}>
             <label style={{ display: "block", fontWeight: 700, marginBottom: 4, fontSize: "0.9rem" }}>
-              Stages pro Schwierigkeit
+              Stages per Difficulty
             </label>
             <select
               value={config.stagesPerDifficulty}
@@ -113,7 +113,7 @@ export function LobbyView({ send, audio }: Props) {
           </div>
         </div>
         <p style={{ margin: 0, fontWeight: 700, textAlign: "center", fontSize: "0.95rem" }}>
-          {totalStages} Stages ~ {estimatedMinutes} {estimatedMinutes === 1 ? "Minute" : "Minuten"}
+          {totalStages} Stages ~ {estimatedMinutes} {estimatedMinutes === 1 ? "Minute" : "Minutes"}
         </p>
       </div>
 
