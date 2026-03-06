@@ -93,6 +93,18 @@ export function HomePage() {
           </div>
         </div>
       </div>
+
+      <p style={{ marginTop: 8, fontSize: "0.85rem", opacity: 0.7, textAlign: "center" }}>
+        by{" "}
+        <a
+          href="https://github.com/Stiffi136/web-ware"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "inherit", fontWeight: 700 }}
+        >
+          Stiffi136
+        </a>
+      </p>
     </div>
   );
 }
