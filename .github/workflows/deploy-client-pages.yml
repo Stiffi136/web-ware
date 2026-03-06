@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VITE_WS_URL: ${{ vars.VITE_WS_URL }}
+      VITE_ANALYTICS_SRC: ${{ vars.VITE_ANALYTICS_SRC }}
+      VITE_ANALYTICS_SITE_ID: ${{ vars.VITE_ANALYTICS_SITE_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
