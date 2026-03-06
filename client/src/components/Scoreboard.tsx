@@ -40,21 +40,24 @@ export function Scoreboard() {
           const myRank = sorted.findIndex((r) => r.playerId === state.playerId);
 
           // Build display entries: top 3 + own (if not in top 3)
-          type Entry = { rank: number; name: string; timeMs: number; isMe: boolean };
+          type Entry = { rank: number; name: string; timeMs: number; isMe: boolean; dnf: boolean };
           const entries: Entry[] = top3.map((r, i) => ({
             rank: i + 1,
             name: playerMap.get(r.playerId) ?? "???",
             timeMs: r.timeMs,
             isMe: r.playerId === state.playerId,
+            dnf: false,
           }));
 
           // Add own entry if not already in top 3
-          if (myResult && myRank >= 3) {
+          const meInTop3 = top3.some((r) => r.playerId === state.playerId);
+          if (myResult && !meInTop3) {
             entries.push({
               rank: myResult.success ? myRank + 1 : -1,
               name: playerMap.get(myResult.playerId) ?? "???",
               timeMs: myResult.timeMs,
               isMe: true,
+              dnf: !myResult.success,
             });
           }
 
@@ -83,7 +86,7 @@ export function Scoreboard() {
                       {e.isMe ? `${e.name} (you)` : e.name}
                     </span>
                     <span className="stage-scoreboard-time">
-                      {formatTime(e.timeMs)}
+                      {e.dnf ? "DNF" : formatTime(e.timeMs)}
                     </span>
                     {e.isMe && RANK_POINTS[e.rank] && (
                       <span className="stage-scoreboard-pts">
