@@ -46,7 +46,7 @@ export function LobbyView({ send, audio }: Props) {
           className="crayon-btn edgefx"
           style={{ marginTop: 8, background: "rgba(255,255,255,0.5)" }}
           onClick={() => {
-            const url = `${window.location.origin}${import.meta.env.BASE_URL}room/${room.id}`;
+            const url = `${window.location.origin}${import.meta.env.BASE_URL}?join=${room.id}`;
             navigator.clipboard.writeText(url).then(() => setCopied(true));
             setTimeout(() => setCopied(false), 2000);
           }}

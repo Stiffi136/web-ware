@@ -30,12 +30,13 @@ export function RoomPage() {
     });
   }, [state.playerName, send, navigate]);
 
-  // Update URL when server assigns room ID
+  // Update address bar to a copyable invite URL when server assigns room ID
   useEffect(() => {
-    if (state.room && roomId !== state.room.id) {
-      navigate(`/room/${state.room.id}`, { replace: true });
+    if (state.room) {
+      const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+      window.history.replaceState(null, "", `${base}/?join=${state.room.id}`);
     }
-  }, [state.room, roomId, navigate]);
+  }, [state.room?.id]);
 
   // Audio: play music during game, adjust speed
   const prevStateRef = useRef<string>("");
