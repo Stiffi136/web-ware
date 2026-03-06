@@ -9,6 +9,7 @@ import { InstallerStage } from "./InstallerStage.tsx";
 import { CookieBannerStage } from "./CookieBannerStage.tsx";
 import { AgeVerificationStage } from "./AgeVerificationStage.tsx";
 import { SpamFilterStage } from "./SpamFilterStage.tsx";
+import { AdPopupStage } from "./AdPopupStage.tsx";
 
 export const stageRegistry: Record<string, FC<StageProps>> = {
   captcha: CaptchaStage,
@@ -20,6 +21,7 @@ export const stageRegistry: Record<string, FC<StageProps>> = {
   "cookie-banner": CookieBannerStage,
   "age-verification": AgeVerificationStage,
   "spam-filter": SpamFilterStage,
+  "ad-popup": AdPopupStage,
 };
 
 export const stageNames: Record<string, string> = {
@@ -32,4 +34,5 @@ export const stageNames: Record<string, string> = {
   "cookie-banner": "Cookie Banner",
   "age-verification": "Age Verification",
   "spam-filter": "Spam Filter",
+  "ad-popup": "Ad Popup",
 };

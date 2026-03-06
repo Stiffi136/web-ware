@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG } from "./types.ts";
 const rooms = new Map<string, Room>();
 const socketToRoom = new Map<GameSocket, string>();
 
-const STAGE_TYPES = ["captcha", "password", "data-form", "download-button", "online-shop", "installer", "cookie-banner", "age-verification", "spam-filter"];
+const STAGE_TYPES = ["captcha", "password", "data-form", "download-button", "online-shop", "installer", "cookie-banner", "age-verification", "spam-filter", "ad-popup"];
 
 function generateRoomId(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
